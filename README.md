@@ -13,6 +13,27 @@ The **m3u-playlist-cleaner** is a robust tool designed to validate and clean M3U
 
 - Docker (No need to install PHP or Composer locally, as everything is handled within the Docker container)
 
+## Architecture
+Container should run on any physical Linux machine (including RaspberryPi), Virtual Machine, or Windows 10 or newer (with docker desktop). They have been tested on Windows 10 Pro, Debian, and Ubuntu.
+
+<table>
+<tr>
+<th>Architecture</th>
+<th>Available</th>	
+</tr>
+<tr>
+<td>amd64</td>
+<td>✅</td>
+</tr>
+<tr>	
+<td>arm64</td>
+<td>✅</td>
+</tr>
+<td>arm/v7</td>
+<td>✅	
+</td>
+</table>
+
 ## Installation
 
 Clone the repository to your local machine:
