@@ -55,7 +55,13 @@ Run the Docker container:
 ```bash
 docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" m3u-playlist-cleaner
 ```
+## Use this Pre Built Image!
 
+Don't want to mess with building the docker image yourself? We have already compiled a pre-built image for different architectures.<br><br>To run the `m3u-playlist-cleaner` using the pre-built Docker image, use the following command:
+
+```bash
+docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" seanriggs/m3u-playlist-cleaner
+```
 - *Make sure* to replace "/path/to/your/m3u/files" with the path to the directory containing your M3U files. There is no requirement to name your m3u files; it only has a .m3u* extension. the output file is renamed to <code>playlist.m3u</code>. This can be modified in the playlist_validator.php file.
 - *Make sure* you are running the docker command in the m3u-playlist-cleaner directory, as the required files for the container exist here. You can map the volume to your m3u files in a different location (and you should) or create a separate directory just for m3u files, which is helpful.
 - **Logging**: Logging for the container is built in and will save an output log called </code>validator.log</code> in the same folder as your output file of the playlist.m3u that is generated. Logs contain channels that were removed during the parsing and why.
