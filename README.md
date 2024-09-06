@@ -2,6 +2,8 @@
 
 The **m3u-playlist-cleaner** is a robust tool designed to validate and clean M3U playlists by verifying each channel's stream availability and removing any entries with invalid streams. Tailored for IPTV providers and users looking to maintain streamlined and efficient playlists, this cleaner ensures your playlists are up-to-date and free of dead links.
 
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=Perfect+Your+IPTV+Experience!)](https://git.io/typing-svg)
+
 ## Features
 
 - **Stream Validation**: Automatically checks each channel's stream availability.
