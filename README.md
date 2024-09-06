@@ -35,8 +35,9 @@ Run the Docker container:
 docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" m3u-playlist-cleaner
 ```
 
-- *Make sure* to replace "/path/to/your/m3u/files" with the path to the directory containing your M3U files.
-- **Logging**: Most users will want to see logging to see differences in playlist and output for success and failures. If you want log output created, please run the docker command in the <a href="https://github.com/SeanRiggs/m3u-playlist-cleaner/edit/main/README.md#logs"><mark>log</mark></a> section below.
+- *Make sure* to replace "/path/to/your/m3u/files" with the path to the directory containing your M3U files. There is no requirement to name your m3u files; it only has a .m3u* extension. the output file is renamed to <code>playlist.m3u</code>. This can be modified in the playlist_validator.php file.
+- *Make sure* you are running the docker command in the m3u-playlist-cleaner directory, as the required files for the container exist here. You can map the volume to your m3u files in a different location (and you should) or create a separate directory just for m3u files, which is helpful.
+- **Logging**: Logging for the container is built in and will save an output log called </code>validator.log</code> in the same folder as your output file of the playlist.m3u that is generated. Logs contain channels that were removed during the parsing and why.
 
 **Execution and Removal**
 
@@ -49,14 +50,9 @@ When you run this command, Docker will:
 
 ### Logs
 
-Logs are written to <code>/var/tmp/m3u/validator.log </code> inside the Docker container. To keep logs on your host, mount a volume to this path when running the Docker container:
-
-```bash
-docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" -v "/path/to/your/logs:/var/tmp/m3u" m3u-playlist-cleaner
-```
+Logs are written to <code>/var/tmp/m3u/validator.log </code> inside the Docker container. 
 
 **Additional Tips:**
-- Ensure that the directory <code>/path/to/your/logs</code> on your host is correctly set up and has the appropriate permissions for Docker to write files.
 - Monitor and manage the size of log files regularly to prevent them from consuming excessive disk space on the host.
 
 **validator.log example:**
