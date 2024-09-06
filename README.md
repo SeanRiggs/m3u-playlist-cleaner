@@ -29,7 +29,7 @@ cd m3u-playlist-cleaner
 
 ```bash
 docker build -t m3u-playlist-cleaner .
-``
+```
 
 ### Usage
 Run the Docker container:
