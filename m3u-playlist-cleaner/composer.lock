@@ -1,0 +1,68 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "1111e4319b62ac622df94c10b32a2e60",
+    "packages": [
+        {
+            "name": "gemorroj/m3u-parser",
+            "version": "5.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Gemorroj/M3uParser.git",
+                "reference": "b78b68fb55bb4374a2dab7482c934dd2eddc2070"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Gemorroj/M3uParser/zipball/b78b68fb55bb4374a2dab7482c934dd2eddc2070",
+                "reference": "b78b68fb55bb4374a2dab7482c934dd2eddc2070",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.41",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "M3uParser\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Gemorroj"
+                }
+            ],
+            "description": "m3u playlist parser/generator",
+            "keywords": [
+                "m3u",
+                "m3u8",
+                "playlist"
+            ],
+            "support": {
+                "issues": "https://github.com/Gemorroj/M3uParser/issues",
+                "source": "https://github.com/Gemorroj/M3uParser/tree/5.5.0"
+            },
+            "time": "2023-12-22T13:47:59+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}
