@@ -77,6 +77,16 @@ docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" -v "/path/to/your/
 ### Configuration
 Modify the playlist_validator.php script to customize the validation logic or to change the logging verbosity as per your requirements.
 
+## Acknowledgments
+
+This project uses the [M3uParser](https://github.com/Gemorroj/M3uParser) library, which is licensed under the GNU Lesser General Public License (LGPL) Version 3.
+
+You can find the source code for M3uParser at the following link:  
+[https://github.com/Gemorroj/M3uParser](https://github.com/Gemorroj/M3uParser).
+
+This project includes a copy of the GNU Lesser General Public License Version 3 in compliance with the LGPL.  
+Please refer to the license document or visit the [Free Software Foundation](https://www.gnu.org/licenses/lgpl-3.0.html) for more information.
+
 
 ### License
 
