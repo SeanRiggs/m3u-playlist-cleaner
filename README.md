@@ -121,5 +121,5 @@ Distributed under the MIT License. See LICENSE for more information.
 
 Project Link: https://github.com/SeanRiggs/m3u-playlist-cleaner
 <br>
-DockerHub Link: https://hub.docker.com/repository/docker/seanriggs/m3u-playlist-cleaner/general
+DockerHub Link: https://hub.docker.com/r/seanriggs/m3u-playlist-cleaner
 
