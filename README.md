@@ -11,6 +11,21 @@ The **m3u-playlist-cleaner** is a robust tool designed to validate and clean M3U
 - **Logging**: Detailed logs of actions performed on the playlists, including which channels were removed.
 - **Docker Integration**: Packaged into a Docker container for easy deployment and isolation.
 
+## What's New in Version 2
+
+Version 2 brings several improvements and changes over version 1:
+
+- **Improved URL Validation**: Version 2 includes enhanced URL and stream validation to ensure that only working channels are included in the playlist.
+- **Better Logging**: The logging system now prints to both a log file and the terminal for better tracking of stream validation.
+- **Configurable Options**: Version 2 allows for more configurable options through <i>environment variables</i> such as `LOG_FILE`, `OUTPUT_FILE`, and `M3U_DIRECTORY`.
+- **Streamlined Duplicate Handling**: The new version improves the handling of duplicate channels in playlists, ensuring they are handled more efficiently.
+
+For users still interested in version 1, you can switch to the `v1` branch using the following command:
+
+```bash
+git checkout v1
+```
+
 ## Prerequisites
 
 - Docker (No need to install PHP or Composer locally, as everything is handled within the Docker container)
@@ -101,6 +116,43 @@ Logs are written to <code>/var/tmp/m3u/validator.log </code> inside the Docker c
 
 ### Configuration
 Modify the playlist_validator.php script to customize the validation logic or to change the logging verbosity as per your requirements.
+
+## Environment Variables
+
+This application allows the use of several environment variables to customize its behavior. Below are the available environment variables along with their default values and descriptions:
+```
+| Variable                | Default Value                | Description                                                                                  |
+|-------------------------|------------------------------|----------------------------------------------------------------------------------------------|
+| `LOG_FILE`              | `/var/tmp/m3u/validator.log` | Specifies the path to the log file where validation logs will be written.                   |
+| `OUTPUT_FILE`           | `/var/tmp/m3u/playlist.m3u`  | Defines the output file name for the generated playlist.                                    |
+| `M3U_DIRECTORY`         | `m3u`                        | Sets the directory where M3U files are located. This directory should contain `.m3u` files. |
+```
+
+### Usage
+
+You can set these environment variables in your terminal session before running the Docker container. For example:
+
+```bash
+docker run -it --rm \
+  -e LOG_FILE="/path/to/your/logfile.log" \
+  -e OUTPUT_FILE="/path/to/your/output/playlist.m3u" \
+  -e M3U_DIRECTORY="/path/to/your/m3u/files" \
+  -v "/path/to/your/local/m3ufiles:/var/tmp/m3u" \
+  m3u-playlist-cleaner
+```
+**Example**
+If you want to change the log file and output file while using the default M3U directory, you can run:
+```docker
+docker run -it --rm \
+  -e LOG_FILE="/var/tmp/m3u/custom.log" \
+  -e OUTPUT_FILE="/var/tmp/m3u/custom_playlist.m3u" \
+  -v "/path/to/your/local/m3ufiles:/var/tmp/m3u" \
+  m3u-playlist-cleaner
+```
+
+**Important Notes**
+Ensure that the specified paths for the log file and output file are writable by the Docker container.
+The application will use the above default values if you don't set these variables.
 
 ## Acknowledgments
 
