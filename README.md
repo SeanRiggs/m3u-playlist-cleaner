@@ -79,7 +79,7 @@ Don't want to mess with building the docker image yourself? We have already comp
 ```bash
 docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" seanriggs/m3u-playlist-cleaner
 ```
-- *Make sure* to replace "/path/to/your/m3u/files" with the path to the directory containing your M3U files. There is no requirement to name your m3u files; it only has a .m3u* extension. the output file is renamed to <code>playlist.m3u</code>. This can be modified in the playlist_validator.php file.
+- *Make sure* to replace "/path/to/your/m3u/files" with the path to the directory containing your M3U files. There is no requirement to name your m3u files; it only needs a `.m3u` or `.m3u8` extension. the output file is renamed to <code>playlist.m3u</code>. This can be modified in the playlist_validator.php file.
 - *Make sure* you are running the docker command in the m3u-playlist-cleaner directory, as the required files for the container exist here. You can map the volume to your m3u files in a different location (and you should) or create a separate directory just for m3u files, which is helpful.
 - **Logging**: Logging for the container is built in and will save an output log called </code>validator.log</code> in the same folder as your output file of the playlist.m3u that is generated. Logs contain channels that were removed during the parsing and why.
 
@@ -125,7 +125,7 @@ This application allows the use of several environment variables to customize it
 |-------------------------|------------------------------|----------------------------------------------------------------------------------------------|
 | `LOG_FILE`              | `/var/tmp/m3u/validator.log` | Specifies the path to the log file where validation logs will be written.                   |
 | `OUTPUT_FILE`           | `/var/tmp/m3u/playlist.m3u`  | Defines the output file name for the generated playlist.                                    |
-| `M3U_DIRECTORY`         | `m3u`                        | Sets the directory where M3U files are located. This directory should contain `.m3u` files. |
+| `M3U_DIRECTORY`         | `m3u`                        | Sets the directory where M3U files are located. This directory should contain `.m3u` or `.m3u8` files. |
 ```
 
 ### Usage
@@ -175,3 +175,25 @@ Project Link: https://github.com/SeanRiggs/m3u-playlist-cleaner
 <br>
 DockerHub Link: https://hub.docker.com/r/seanriggs/m3u-playlist-cleaner
 
+
+## Regression tests
+
+With PHP 8 CLI and Python 3 installed, run from the repository root:
+
+```bash
+php -l m3u-playlist-cleaner/playlist_validator.php
+python3 -m unittest discover -s tests -v
+```
+
+The tests run the real validator and bundled parser against a local HTTP stream.
+They cover each supported extension alone, mixed playlists, unrelated extensions,
+and an empty directory. No external stream service is needed.
+
+To check the Alpine Docker runtime as well, build from the application directory:
+
+```bash
+docker build -t m3u-playlist-cleaner:test m3u-playlist-cleaner
+docker run --rm --entrypoint php m3u-playlist-cleaner:test -l /var/tmp/playlist_validator.php
+```
+
+Rebuild your image to use this fix; existing pre-built images will need an updated release.

@@ -21,7 +21,11 @@ function logEvent($message) {
 
 $obj = new M3uParser();
 $obj->addDefaultTags();
-$files = glob($config['m3uDirectory'] . '/*.m3u');
+$files = array_merge(
+    glob($config['m3uDirectory'] . '/*.m3u') ?: [],
+    glob($config['m3uDirectory'] . '/*.m3u8') ?: []
+);
+sort($files, SORT_STRING);
 $urlCache = []; // Define the cache outside of the function to persist it
 
 $a = [];

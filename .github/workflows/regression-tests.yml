@@ -1,0 +1,26 @@
+name: Playlist regression tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.0', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: php -l m3u-playlist-cleaner/playlist_validator.php
+      - run: python3 -m unittest discover -s tests -v
