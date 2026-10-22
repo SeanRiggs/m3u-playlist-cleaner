@@ -1,6 +1,6 @@
 # m3u-playlist-cleaner
 
-The **m3u-playlist-cleaner** is a robust tool designed to validate and clean M3U playlists by verifying each channel's stream availability and removing any entries with invalid streams. Tailored for IPTV providers and users looking to maintain streamlined and efficient playlists, this cleaner ensures your playlists are up-to-date and free of dead links.
+**m3u-playlist-cleaner** combines `.m3u` and `.m3u8` playlists, checks channel URLs and stream availability, and writes the channels that pass validation to a cleaned playlist. Run it with Docker using your own playlist directory.
 
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=Perfect+Your+IPTV+Experience!)](https://git.io/typing-svg)
 
@@ -10,6 +10,18 @@ The **m3u-playlist-cleaner** is a robust tool designed to validate and clean M3U
 - **Duplicate Removal**: Identifies and removes duplicate channel entries.
 - **Logging**: Detailed logs of actions performed on the playlists, including which channels were removed.
 - **Docker Integration**: Packaged into a Docker container for easy deployment and isolation.
+
+## Latest update — October 22, 2026
+
+- Fixed `.m3u8` playlist discovery; renaming files to `.m3u` is no longer needed ([issue #2](https://github.com/SeanRiggs/m3u-playlist-cleaner/issues/2)).
+- Published the fix in `seanriggs/m3u-playlist-cleaner:latest` for AMD64, ARM64, and ARMv7.
+- Added automated regression tests, including tests inside the Docker image.
+
+If you already use the pre-built image, pull the update before running it again:
+
+```bash
+docker pull seanriggs/m3u-playlist-cleaner:latest
+```
 
 ## What's New in Version 2
 
@@ -31,25 +43,13 @@ git checkout v1
 - Docker (No need to install PHP or Composer locally, as everything is handled within the Docker container)
 
 ## Architecture
-Container should run on any physical Linux machine (including RaspberryPi), Virtual Machine, or Windows 10 or newer (with docker desktop). They have been tested on Windows 10 Pro, Debian, and Ubuntu.
+Published Docker images support these Linux container platforms. On Windows or macOS, use Docker Desktop with Linux containers.
 
-<table>
-<tr>
-<th>Architecture</th>
-<th>Available</th>	
-</tr>
-<tr>
-<td>amd64</td>
-<td>✅</td>
-</tr>
-<tr>	
-<td>arm64</td>
-<td>✅</td>
-</tr>
-<td>arm/v7</td>
-<td>✅	
-</td>
-</table>
+| Platform | Typical systems |
+| --- | --- |
+| `linux/amd64` | Intel/AMD PCs and servers |
+| `linux/arm64` | 64-bit ARM systems |
+| `linux/arm/v7` | 32-bit ARMv7 systems |
 
 ## Installation
 
@@ -63,7 +63,7 @@ cd m3u-playlist-cleaner
 ## Build the Docker container:
 
 ```bash
-docker build -t m3u-playlist-cleaner .
+docker build -t m3u-playlist-cleaner ./m3u-playlist-cleaner
 ```
 
 ### Usage
@@ -72,16 +72,18 @@ Run the Docker container:
 ```bash
 docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" m3u-playlist-cleaner
 ```
-## Use this Pre Built Image!
+## Use the pre-built image
 
-Don't want to mess with building the docker image yourself? We have already compiled a pre-built image for different architectures.<br><br>To run the `m3u-playlist-cleaner` using the pre-built Docker image, use the following command:
+No repository clone or local build is required. Pull the latest image, then run it with your playlist directory mounted:
 
 ```bash
-docker run -ti --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" seanriggs/m3u-playlist-cleaner
+docker pull seanriggs/m3u-playlist-cleaner:latest
+docker run --rm -v "/path/to/your/m3u/files:/var/tmp/m3u" seanriggs/m3u-playlist-cleaner:latest
 ```
-- *Make sure* to replace "/path/to/your/m3u/files" with the path to the directory containing your M3U files. There is no requirement to name your m3u files; it only needs a `.m3u` or `.m3u8` extension. the output file is renamed to <code>playlist.m3u</code>. This can be modified in the playlist_validator.php file.
-- *Make sure* you are running the docker command in the m3u-playlist-cleaner directory, as the required files for the container exist here. You can map the volume to your m3u files in a different location (and you should) or create a separate directory just for m3u files, which is helpful.
-- **Logging**: Logging for the container is built in and will save an output log called </code>validator.log</code> in the same folder as your output file of the playlist.m3u that is generated. Logs contain channels that were removed during the parsing and why.
+- Replace `/path/to/your/m3u/files` with your host playlist directory. Files must have a lowercase `.m3u` or `.m3u8` extension; subdirectories are not searched.
+- By default, `playlist.m3u` and `validator.log` are written to that same host directory. Use `OUTPUT_FILE` and `LOG_FILE` to customize their locations inside the container.
+- The container runs once and exits after processing the playlists. Each run reads all matching input files, including a previous output playlist if it remains in the input directory.
+- The working directory only matters when building from source. You can run the pre-built image from any directory.
 
 **Execution and Removal**
 
@@ -119,27 +121,32 @@ Modify the playlist_validator.php script to customize the validation logic or to
 
 ## Environment Variables
 
-This application allows the use of several environment variables to customize its behavior. Below are the available environment variables along with their default values and descriptions:
-```
-| Variable                | Default Value                | Description                                                                                  |
-|-------------------------|------------------------------|----------------------------------------------------------------------------------------------|
-| `LOG_FILE`              | `/var/tmp/m3u/validator.log` | Specifies the path to the log file where validation logs will be written.                   |
-| `OUTPUT_FILE`           | `/var/tmp/m3u/playlist.m3u`  | Defines the output file name for the generated playlist.                                    |
-| `M3U_DIRECTORY`         | `m3u`                        | Sets the directory where M3U files are located. This directory should contain `.m3u` or `.m3u8` files. |
-```
+These are the defaults in the published Docker image. Environment-variable paths refer to locations **inside the container**; mount a host directory to retain the files.
+
+| Variable | Docker default | Description |
+| --- | --- | --- |
+| `LOG_FILE` | `/var/tmp/m3u/validator.log` | Log file location. |
+| `OUTPUT_FILE` | `/var/tmp/m3u/playlist.m3u` | Cleaned playlist location. |
+| `M3U_DIRECTORY` | `/var/tmp/m3u` | Directory containing `.m3u` and `.m3u8` input files. |
+
+When running PHP directly, the default input directory is `m3u`, relative to the working directory.
 
 ### Usage
 
-You can set these environment variables in your terminal session before running the Docker container. For example:
+For example, use separate input and output directories to avoid reading the generated playlist on later runs:
 
 ```bash
-docker run -it --rm \
-  -e LOG_FILE="/path/to/your/logfile.log" \
-  -e OUTPUT_FILE="/path/to/your/output/playlist.m3u" \
-  -e M3U_DIRECTORY="/path/to/your/m3u/files" \
-  -v "/path/to/your/local/m3ufiles:/var/tmp/m3u" \
-  m3u-playlist-cleaner
+docker run --rm \
+  -e M3U_DIRECTORY="/input" \
+  -e OUTPUT_FILE="/output/playlist.m3u" \
+  -e LOG_FILE="/output/validator.log" \
+  -v "/path/to/your/playlists:/input:ro" \
+  -v "/path/to/your/output:/output" \
+  seanriggs/m3u-playlist-cleaner:latest
 ```
+
+Create both host directories before running the command.
+
 **Example**
 If you want to change the log file and output file while using the default M3U directory, you can run:
 ```docker
@@ -147,7 +154,7 @@ docker run -it --rm \
   -e LOG_FILE="/var/tmp/m3u/custom.log" \
   -e OUTPUT_FILE="/var/tmp/m3u/custom_playlist.m3u" \
   -v "/path/to/your/local/m3ufiles:/var/tmp/m3u" \
-  m3u-playlist-cleaner
+  seanriggs/m3u-playlist-cleaner:latest
 ```
 
 **Important Notes**
@@ -196,4 +203,4 @@ docker build -t m3u-playlist-cleaner:test m3u-playlist-cleaner
 docker run --rm --entrypoint php m3u-playlist-cleaner:test -l /var/tmp/playlist_validator.php
 ```
 
-Rebuild your image to use this fix; existing pre-built images will need an updated release.
+The published `latest` image includes the `.m3u8` discovery fix. Use `docker pull seanriggs/m3u-playlist-cleaner:latest` to update a cached image, or rebuild from source using the command above.
