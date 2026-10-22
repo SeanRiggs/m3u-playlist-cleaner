@@ -1,0 +1,78 @@
+name: Docker image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build image
+        run: docker build -t m3u-playlist-cleaner:test m3u-playlist-cleaner
+      - name: Check PHP syntax in container
+        run: docker run --rm --entrypoint php m3u-playlist-cleaner:test -l /var/tmp/playlist_validator.php
+      - name: Run regression tests in container
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/container-bin"
+          cat > "$RUNNER_TEMP/container-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run --rm --network host \
+            -v /tmp:/tmp \
+            -e M3U_DIRECTORY -e LOG_FILE -e OUTPUT_FILE \
+            --entrypoint php m3u-playlist-cleaner:test /var/tmp/playlist_validator.php
+          SH
+          chmod +x "$RUNNER_TEMP/container-bin/php"
+          PATH="$RUNNER_TEMP/container-bin:$PATH" python3 -m unittest discover -s tests -v
+      - name: Export tested image
+        run: |
+          docker tag m3u-playlist-cleaner:test seanriggs/m3u-playlist-cleaner:sha-${{ github.sha }}
+          docker save seanriggs/m3u-playlist-cleaner:sha-${{ github.sha }} | gzip > m3u-playlist-cleaner-amd64.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: m3u-playlist-cleaner-amd64
+          path: m3u-playlist-cleaner-amd64.tar.gz
+          retention-days: 14
+      - name: Check Docker Hub publishing configuration
+        id: registry
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -n "$DOCKERHUB_TOKEN" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Docker Hub publication skipped: add repository secret DOCKERHUB_TOKEN." >> "$GITHUB_STEP_SUMMARY"
+            echo "The tested amd64 image is available in this run's artifacts." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: docker/setup-qemu-action@v3
+        if: steps.registry.outputs.configured == 'true'
+      - uses: docker/setup-buildx-action@v3
+        if: steps.registry.outputs.configured == 'true'
+      - uses: docker/login-action@v3
+        if: steps.registry.outputs.configured == 'true'
+        with:
+          username: seanriggs
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publish supported architectures
+        if: steps.registry.outputs.configured == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./m3u-playlist-cleaner
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            seanriggs/m3u-playlist-cleaner:latest
+            seanriggs/m3u-playlist-cleaner:sha-${{ github.sha }}
